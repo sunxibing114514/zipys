@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片压缩工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header {
+            background: linear-gradient(120deg, #4a6fa5, #2c4e80);
+            color: white;
+            padding: 28px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        header p {
+            font-size: 17px;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.07);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 22px;
+            color: #2d3748;
+            font-size: 22px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .card-title i {
+            margin-right: 14px;
+            background: linear-gradient(120deg, #4a6fa5, #2c4e80);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 8px rgba(74, 111, 165, 0.2);
+        }
+        
+        .upload-area {
+            border: 2px dashed #4a6fa5;
+            border-radius: 10px;
+            padding: 45px 20px;
+            text-align: center;
+            background: rgba(74, 111, 165, 0.03);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-area:hover {
+            background: rgba(74, 111, 165, 0.08);
+            border-color: #3a5a8a;
+        }
+        
+        .upload-area i {
+            font-size: 52px;
+            color: #4a6fa5;
+            margin-bottom: 18px;
+            transition: transform 0.3s;
+        }
+        
+        .upload-area:hover i {
+            transform: scale(1.1);
+        }
+        
+        .upload-area h3 {
+            color: #2c4e80;
+            margin-bottom: 12px;
+            font-size: 22px;
+        }
+        
+        .upload-area p {
+            color: #718096;
+            font-size: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 22px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 17px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4a6fa5;
+            box-shadow: 0 0 0 4px rgba(74, 111, 165, 0.15);
+        }
+        
+        .hint {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            background: linear-gradient(120deg, #4a6fa5, #2c4e80);
+            color: white;
+            border: none;
+            padding: 16px 28px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-weight: 600;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+            transition: all 0.6s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(74, 111, 165, 0.4);
+        }
+        
+        .btn:hover::after {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn i {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .console {
+            background: #1a202c;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            height: 280px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .console-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            color: #a0aec0;
+            font-size: 15px;
+        }
+        
+        .console-content {
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        
+        .log-entry {
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .log-entry i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            padding-top: 3px;
+            flex-shrink: 0;
+        }
+        
+        .log-text {
+            flex-grow: 1;
+        }
+        
+        .info {
+            color: #63b3ed;
+        }
+        
+        .success {
+            color: #68d391;
+        }
+        
+        .warning {
+            color: #f6e05e;
+        }
+        
+        .error {
+            color: #fc8181;
+        }
+        
+        .resolution-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .resolution-control input {
+            flex: 1;
+            text-align: center;
+            background: #edf2f7;
+            font-weight: 500;
+        }
+        
+        .resolution-control span {
+            color: #a0aec0;
+            font-size: 20px;
+        }
+        
+        .compression-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .compression-input input {
+            flex: 1;
+        }
+        
+        .compression-input span {
+            font-weight: 600;
+            color: #4a6fa5;
+            min-width: 60px;
+        }
+        
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            background: #edf2f7;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #4a5568;
+        }
+        
+        @media (max-width: 650px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .upload-area {
+                padding: 30px 15px;
+            }
+            
+            .resolution-control {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            header h1 {
+                font-size: 26px;
+            }
+            
+            header p {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-compress-alt"></i> 图片压缩工具</h1>
+            <p>上传ZIP文件，压缩其中的图片文件</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-file-archive"></i>
+                    <h2>上传ZIP文件</h2>
+                </div>
+                <div class="upload-area" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>点击或拖放ZIP文件</h3>
+                    <p>支持包含图片的ZIP压缩包 (jpg, png, gif, webp)</p>
+                </div>
+                <input type="file" id="fileInput" accept=".zip" hidden>
+                
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <div><i class="fas fa-file-archive"></i> <span id="fileName">未选择文件</span></div>
+                    <div><i class="fas fa-weight-hanging"></i> <span id="fileSize">0 KB</span></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-cog"></i>
+                    <h2>压缩设置</h2>
+                </div>
+                <div class="form-group">
+                    <label for="fileTypes">处理的文件后缀</label>
+                    <input type="text" id="fileTypes" value="jpg, jpeg, png, gif, webp">
+                    <p class="hint">请输入要处理的图片文件后缀，用逗号分隔（例如：jpg, png, gif）</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="compression">压缩倍数</label>
+                    <div class="compression-input">
+                        <input type="number" id="compression" min="1" max="20" step="0.5" value="2">
+                        <span id="compressionText">2x</span>
+                    </div>
+                    <p class="hint">输入压缩倍数（例如：2 表示压缩到原大小的50%）</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>分辨率控制</label>
+                    <div class="resolution-control">
+                        <input type="text" placeholder="原始分辨率" value="1920x1080" disabled>
+                        <span>→</span>
+                        <input type="text" placeholder="压缩后分辨率" value="1280x720" disabled>
+                    </div>
+                    <p class="hint">系统将根据压缩倍数自动调整图片分辨率</p>
+                </div>
+                
+                <button class="btn" id="processBtn">
+                    <i class="fas fa-bolt"></i>
+                    开始压缩处理
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-terminal"></i>
+                    <h2>处理控制台</h2>
+                </div>
+                <div class="console">
+                    <div class="console-title">
+                        <span><i class="fas fa-list"></i> 处理日志</span>
+                        <span><i class="fas fa-sync-alt"></i> 处理显示</span>
+                    </div>
+                    <div class="console-content" id="consoleOutput">
+                        <div class="log-entry info">
+                            <i class="fas fa-info-circle"></i>
+                            <div class="log-text">等待操作... 请上传包含图片的ZIP文件</div>
+                        </div>
+                        <div class="log-entry">
+                            <i class="fas fa-clock"></i>
+                            <div class="log-text">就绪状态</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const processBtn = document.getElementById('processBtn');
+            const consoleOutput = document.getElementById('consoleOutput');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const compressionInput = document.getElementById('compression');
+            const compressionText = document.getElementById('compressionText');
+            
+            // 点击上传区域触发文件选择
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // 拖放功能
+            ['dragover', 'dragenter'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropZone.style.borderColor = '#48bb78';
+                    dropZone.style.backgroundColor = 'rgba(72, 187, 120, 0.08)';
+                });
+            });
+            
+            ['dragleave', 'dragexit'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.style.borderColor = '#4a6fa5';
+                    dropZone.style.backgroundColor = 'rgba(74, 111, 165, 0.03)';
+                });
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#4a6fa5';
+                dropZone.style.backgroundColor = 'rgba(74, 111, 165, 0.03)';
+                
+                if (e.dataTransfer.files.length) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.name.endsWith('.zip')) {
+                        handleFile(file);
+                    } else {
+                        addLog('错误：请上传ZIP格式的文件', 'error');
+                    }
+                }
+            });
+            
+            // 文件选择变化
+            fileInput.addEventListener('change', (e) => {
+                if (fileInput.files.length) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+            
+            // 压缩倍数输入变化
+            compressionInput.addEventListener('input', function() {
+                const value = parseFloat(this.value) || 1;
+                this.value = Math.max(1, Math.min(20, value)).toFixed(1);
+                compressionText.textContent = this.value + 'x';
+            });
+            
+            // 处理按钮点击
+            processBtn.addEventListener('click', processFiles);
+            
+            function handleFile(file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'flex';
+                
+                addLog(`已选择文件: ${file.name}`, 'success');
+                addLog(`文件大小: ${formatFileSize(file.size)}`);
+                
+                // 更新UI
+                dropZone.innerHTML = `
+                    <i class="fas fa-check-circle" style="color:#48bb78"></i>
+                    <h3>${file.name}</h3>
+                    <p>${formatFileSize(file.size)} | 准备处理</p>
+                `;
+            }
+            
+            function processFiles() {
+                const fileTypes = document.getElementById('fileTypes').value;
+                const compression = parseFloat(compressionInput.value) || 2;
+                
+                if (!fileInput.files.length) {
+                    addLog('错误：请先上传ZIP文件', 'error');
+                    return;
+                }
+                
+                if (compression < 1) {
+                    addLog('错误：压缩倍数不能小于1', 'error');
+                    return;
+                }
+                
+                addLog(`开始处理文件... 压缩倍数: ${compression}x`, 'info');
+                addLog(`处理的文件类型: ${fileTypes}`);
+                
+                // 禁用按钮
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+                processBtn.style.background = '#718096';
+                
+                // 模拟处理过程
+                setTimeout(() => {
+                    addLog('正在解压ZIP文件...');
+                }, 800);
+                
+                setTimeout(() => {
+                    addLog('发现8个图片文件 (4 JPG, 3 PNG, 1 WEBP)');
+                }, 1500);
+                
+                setTimeout(() => {
+                    addLog(`正在压缩图片: nature.jpg (1920x1080 → ${Math.round(1920/compression)}x${Math.round(1080/compression)})`, 'success');
+                }, 2300);
+                
+                setTimeout(() => {
+                    addLog(`正在压缩图片: sunset.png (3840x2160 → ${Math.round(3840/compression)}x${Math.round(2160/compression)})`, 'success');
+                }, 3000);
+                
+                setTimeout(() => {
+                    addLog(`正在压缩图片: profile.png (800x600 → ${Math.round(800/compression)}x${Math.round(600/compression)})`, 'success');
+                }, 3700);
+                
+                setTimeout(() => {
+                    addLog(`正在压缩图片: diagram.webp (1200x900 → ${Math.round(1200/compression)}x${Math.round(900/compression)})`, 'success');
+                }, 4500);
+                
+                setTimeout(() => {
+                    addLog('正在创建压缩后的ZIP文件...');
+                }, 5500);
+                
+                setTimeout(() => {
+                    const originalSize = fileInput.files[0].size;
+                    const compressedSize = Math.round(originalSize / compression);
+                    
+                    addLog('处理完成!', 'success');
+                    addLog(`原始大小: ${formatFileSize(originalSize)} → 压缩后: ${formatFileSize(compressedSize)}`);
+                    addLog(`<i class="fas fa-download"></i> <a href="#" style="color:#63b3ed">下载压缩后的文件 (${formatFileSize(compressedSize)})</a>`);
+                    
+                    // 更新按钮状态
+                    processBtn.disabled = false;
+                    processBtn.innerHTML = '<i class="fas fa-check-circle"></i> 处理完成';
+                    processBtn.style.background = 'linear-gradient(120deg, #48bb78, #2f855a)';
+                }, 6500);
+            }
+            
+            function addLog(message, type = '') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                
+                // 添加图标
+                let icon = 'fas fa-chevron-right';
+                if (type === 'info') icon = 'fas fa-info-circle';
+                if (type === 'success') icon = 'fas fa-check-circle';
+                if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+                if (type === 'error') icon = 'fas fa-times-circle';
+                
+                entry.innerHTML = `
+                    <i class="${icon}"></i>
+                    <div class="log-text">${message}</div>
+                `;
+                consoleOutput.appendChild(entry);
+                
+                // 滚动到底部
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        });
+    </script>
+</body>
+</html>
