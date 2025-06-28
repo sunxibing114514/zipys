@@ -564,7 +564,7 @@
                         <input type="number" id="compression" min="1" max="20" step="0.5" value="2" placeholder="输入压缩倍数">
                         <span id="compressionText">2x</span>
                     </div>
-                    <p class="hint">输入压缩倍数</p>
+                    <p class="hint">输入压缩倍数（例如：2 表示压缩到原大小的50%）</p>
                 </div>
                 
                 <div class="form-group">
@@ -618,7 +618,7 @@
                 <div class="console">
                     <div class="console-title">
                         <span><i class="fas fa-list"></i> 处理日志</span>
-                        <span><i class="fas fa-sync-alt"></i> 处理过程</span>
+                        <span><i class="fas fa-sync-alt"></i> 处理显示</span>
                     </div>
                     <div class="console-content" id="consoleOutput">
                         <div class="log-entry info">
@@ -657,8 +657,6 @@
             let compressedFileSize = 0;
             let lastValidCompression = 2;
             let compressedZip = null;
-            let originalImageSizes = {};
-            let compressedImageSizes = {};
             
             // 点击上传区域触发文件选择
             dropZone.addEventListener('click', () => {
@@ -827,7 +825,6 @@
                         
                         const fileData = await fileEntry.async('blob');
                         totalOriginalSize += fileData.size;
-                        originalImageSizes[fileName] = fileData.size;
                         
                         try {
                             // 压缩图片
@@ -837,7 +834,6 @@
                             newZip.file(fileName, compressedImage);
                             
                             // 记录压缩后大小
-                            compressedImageSizes[fileName] = compressedImage.size;
                             totalCompressedSize += compressedImage.size;
                             
                             // 添加日志
@@ -848,7 +844,6 @@
                             addLog(`压缩图片失败: ${fileName}`, 'error');
                             // 如果压缩失败，添加原始图片
                             newZip.file(fileName, fileData);
-                            compressedImageSizes[fileName] = fileData.size;
                             totalCompressedSize += fileData.size;
                         }
                         
@@ -904,6 +899,7 @@
                     // 使用compressor.js压缩图片
                     new Compressor(file, {
                         quality: quality,
+                        mimeType: 'auto',
                         success(result) {
                             resolve(result);
                         },
